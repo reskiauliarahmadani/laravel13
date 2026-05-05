@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use Faker\Guesser\Name;
 use Illuminate\Http\Request;
-use Pest\Support\View;
 
 class StudentController extends Controller
 {
@@ -14,10 +12,9 @@ class StudentController extends Controller
      */
     public function index()
     {
-       return view('student.index', [
-        'title' => 'student',
-        'students' => Student::all(),
-        ]);
+        return view('student.index' , 
+        ['tittle' => 'Student',
+        'students' => Student::latest()->get()]);
     }
 
     /**
@@ -25,7 +22,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('student.create', ['title' => 'create student']);
+        return view('student.create' , ['tittle' => 'create student']);
     }
 
     /**
@@ -33,19 +30,24 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-    $validated = $request->validate([
+        $validated = $request->validate([
         'name' => 'required|max:255',
-        'nim' => 'required|dgits:11|numeric',
-    ],[
-        'name.requeired' => 'nama tidak boleh kosong',
-        'name.max' => 'nama tidaklebih dari :max karakter',
-        'nim.requeired' => 'nim tidak kosong',
-        'name.digits' => 'nim wajib :digits digit',
-        'name.numeric' => 'NIM wajib angka',
-
+        'nim' => 'required|digits:11|numeric',
+    
+    ],
+    [
+        'name.required' => 'Nama wajib diisi',
+        'name.max' => 'Nama tidak boleh lebih dari :max karakter',
+        'nim.required' => 'NIM wajib diisi',
+        'nim.digits' => 'NIM harus terdiri dari :digits digit',
+        'nim.numeric' => 'NIM harus berupa angka',
     ]);
-    Student::created($validated);
-    return to_route('student.index')->withsuccess('Data berhasil ditambahkan');
+
+    Student::create($validated);
+    
+    return to_route('student.index')->withSuccess('Student created successfully');
+
+    return redirect('/student');
     }
 
     /**
@@ -61,7 +63,9 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        return view('student.edit' , 
+        ['tittle' => 'Edit Student',
+        'student' => $student,]);
     }
 
     /**
@@ -69,19 +73,22 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-       $validated = $request->validate([
-         'name' => 'required|max:255',
-        'nim' => 'required|dgits:11|numeric',
-       ],[
-        'name.requeired' => 'nama tidak boleh kosong',
-        'name.max' => 'nama tidaklebih dari :max karakter',
-        'nim.requeired' => 'nim tidak kosong',
-        'name.digits' => 'nim wajib :digits digit',
-        'name.numeric' => 'NIM wajib angka',
-       ]);
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'nim' => 'required|digits:11|numeric',
+        
+        ],
+        [
+            'name.required' => 'Nama wajib diisi',
+            'name.max' => 'Nama tidak boleh lebih dari :max karakter',
+            'nim.required' => 'NIM wajib diisi',
+            'nim.digits' => 'NIM harus terdiri dari :digits digit',
+            'nim.numeric' => 'NIM harus berupa angka',
+        ]);
 
-       $student->update($validated);
-       return to_route('student.index')->withSuccess('Data berhasil diubah');
+        $student->update($validated);
+        
+        return to_route('student.index')->withSuccess('Student updated successfully');
     }
 
     /**
@@ -89,8 +96,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-      $student->delete($student);
-      return to_route('student.index')->withSuccess('Data berhasil dihapus');
-      
+        $student->delete($student);
+        
+        return to_route('student.index')->withSuccess('Student deleted successfully');
     }
 }

@@ -1,26 +1,40 @@
 <x-app>
 
-    <x-slot:title>{{ $title }}</x-slot>
+    <x-slot:title>
+        {{ $title ?? 'Data Student' }}
+    </x-slot>
 
-    <a class="btn btn-primary mb-3" href="{{ route('student.create') }}" role="button">Create</a>
+    <a href="{{ route('student.create') }}" class="btn btn-primary mb-3">
+        Create
+    </a>
 
     <ul class="list-group">
-        @foreach ($students as $student)
-            <li class="list-group-item">
+        @forelse ($students as $student)
+            <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                {{ $loop->iteration }}. {{ $student->nim }} -- {{ $student->name }}
-                <a class="btn btn-warning btn-sm" href="{{ route('student.edit', $student) }}" role="button">edit</a>
+                {{ $loop->iteration }}. {{ $student->nim }} - {{ $student->name }}
 
-                <form action="{{ route('student.destroy', $student) }}" method="POST" class="d-inline">
-                    @method('DELETE')
-                    @csrf
+                <div>
+                    <a href="{{ route('student.edit', $student->id) }}" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
 
-                    <button type="submit" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Anda Yakin?')">Delete</button>
-                </form>
+                    <form action="{{ route('student.destroy', $student->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+
             </li>
-        @endforeach
+        @empty
+            <li class="list-group-item text-center">
+                Tidak ada data
+            </li>
+        @endforelse
     </ul>
-
 
 </x-app>
