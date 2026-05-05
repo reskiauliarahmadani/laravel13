@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use Faker\Guesser\Name;
 use Illuminate\Http\Request;
+use Pest\Support\View;
 
 class StudentController extends Controller
 {
@@ -31,7 +33,19 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    $validated = $request->validate([
+        'name' => 'required|max:255',
+        'nim' => 'required|dgits:11|numeric',
+    ],[
+        'name.requeired' => 'nama tidak boleh kosong',
+        'name.max' => 'nama tidaklebih dari :max karakter',
+        'nim.requeired' => 'nim tidak kosong',
+        'name.digits' => 'nim wajib :digits digit',
+        'name.numeric' => 'NIM wajib angka',
+
+    ]);
+    Student::created($validated);
+    return to_route('student.index')->withsuccess('Data berhasil ditambahkan');
     }
 
     /**
@@ -55,7 +69,19 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+       $validated = $request->validate([
+         'name' => 'required|max:255',
+        'nim' => 'required|dgits:11|numeric',
+       ],[
+        'name.requeired' => 'nama tidak boleh kosong',
+        'name.max' => 'nama tidaklebih dari :max karakter',
+        'nim.requeired' => 'nim tidak kosong',
+        'name.digits' => 'nim wajib :digits digit',
+        'name.numeric' => 'NIM wajib angka',
+       ]);
+
+       $student->update($validated);
+       return to_route('student.index')->withSuccess('Data berhasil diubah');
     }
 
     /**
@@ -63,6 +89,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+      $student->delete($student);
+      return to_route('student.index')->withSuccess('Data berhasil dihapus');
+      
     }
 }
